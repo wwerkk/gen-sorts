@@ -1,0 +1,119 @@
+{"patcher" : 
+	{
+		"fileversion" : 1,
+		"appversion" : 
+		{
+			"major" : 6,
+			"minor" : 1,
+			"revision" : 5,
+			"architecture" : "x86"
+		},
+
+		"rect" : [ 100.0, 100.0, 600.0, 450.0 ],
+		"bgcolor" : [ 0.9, 0.9, 0.9, 1.0 ],
+		"bglocked" : 0,
+		"openinpresentation" : 0,
+		"default_fontsize" : 12.0,
+		"default_fontface" : 0,
+		"default_fontname" : "Arial",
+		"gridonopen" : 0,
+		"gridsize" : [ 15.0, 15.0 ],
+		"gridsnaponopen" : 0,
+		"statusbarvisible" : 2,
+		"toolbarvisible" : 1,
+		"boxanimatetime" : 200,
+		"imprint" : 0,
+		"enablehscroll" : 1,
+		"enablevscroll" : 1,
+		"devicewidth" : 0.0,
+		"description" : "",
+		"digest" : "",
+		"tags" : "",
+		"boxes" : 
+		[ 	
+{
+    "box": {
+        "code": "Buffer b(\"table\");\n\n// Sort variables\nHistory ix(1);\nHistory jx(0);\nHistory y(0);\nHistory z(0);\nParam running(0);\nParam badIndex(0); // allow ix to run beyond the array length\n\n// Synth variables\nHistory carPhase(0); // carrier phase\nHistory modPhase(0); // modulator phase\nParam carFreq(50); // carrier frequency\nParam modFreq(0); // modulator frequency\nParam modAmp(0); // modulator amplitude\nDelay fb(samplerate);\nParam fbDelay(100);\nParam fbGain(0);\nParam absPhase(1);\n\nlen = dim(b) + badIndex - 1;\n\nmodStep = modFreq / samplerate;\nmodVal = peek(b, modPhase, index=\"phase\", interp=\"none\");\nmodVal *= modAmp;\nfbVal = fb.read(fbDelay, interp=\"none\");\ncarStep = (carFreq + modVal + fbVal) / samplerate;\nif (absPhase) carStep = abs(carStep);\n\n\nif (carPhase >= 1) {\n\tcarPhase -= 1;\n\tif (running) {\n\t\tjx = ix - 1;\n\t\ty = peek(b, ix, interp=\"none\", index=\"samples\");\n\t\tz = peek(b, jx, interp=\"none\", index=\"samples\");\n\t\tif (y < z) {\n\t\t\tpoke(b, y, jx, index=\"samples\");\n\t\t\tpoke(b, z, ix, index=\"samples\");\n\t\t}\n\t\tix = (ix >= len) ? 1 : ix + 1; // unrolled array traversal\n\t}\n}\n\nif (modPhase >= 1) {\n\tmodPhase -= 1;\n}\n\ncarVal = peek(b, carPhase, index=\"phase\", interp=\"none\");\nfb.write(carVal * fbGain);\nout1 = carVal;\n\ncarPhase += carStep;\nmodPhase += modStep;",
+        "fontname": "Arial",
+        "fontsize": 12.0,
+        "id": "codebox1",
+        "maxclass": "codebox",
+        "numinlets": 1,
+        "numoutlets": 1,
+        "patching_rect": [
+            20,
+            50.0,
+            200.0,
+            200.0
+        ]
+    }
+},
+{
+    "box": {
+        "fontname": "Arial",
+        "fontsize": 12.0,
+        "id": "in1",
+        "maxclass": "newobj",
+        "numinlets": 0,
+        "numoutlets": 1,
+        "patching_rect": [
+            20.0,
+            20.0,
+            35.0,
+            20.0
+        ],
+        "text": "in 1"
+    }
+},
+{
+    "box": {
+        "fontname": "Arial",
+        "fontsize": 12.0,
+        "id": "out1",
+        "maxclass": "newobj",
+        "numinlets": 1,
+        "numoutlets": 0,
+        "outlettype": [
+            ""
+        ],
+        "patching_rect": [
+            20.0,
+            260.0,
+            35.0,
+            20.0
+        ],
+        "text": "out 1"
+    }
+}],
+ "lines" : [
+{
+    "patchline": {
+        "destination": [
+            "codebox1",
+            0
+        ],
+        "disabled": 0,
+        "hidden": 0,
+        "source": [
+            "in1",
+            0
+        ]
+    }
+},
+{
+    "patchline": {
+        "destination": [
+            "out1",
+            0
+        ],
+        "disabled": 0,
+        "hidden": 0,
+        "source": [
+            "codebox1",
+            0
+        ]
+    }
+}
+]
+}
+}

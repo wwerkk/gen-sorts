@@ -1,0 +1,46 @@
+Buffer b("table");
+
+// Sort variables
+History ix(1);
+History jx(0);
+History y(0);
+History z(0);
+Param running(0);
+Param badIndex(0); // allow ix to run beyond the array length
+
+// Synth variables
+History carPhase(0); // carrier phase
+History modPhase(0); // modulator phase
+Param carFreq(50); // carrier frequency
+Param modFreq(0); // modulator frequency
+Param modAmp(0); // modulator amplitude
+
+len = dim(b) + badIndex - 1;
+
+modStep = modFreq / samplerate;
+modVal = peek(b, modPhase, index="phase", interp="linear");
+modVal *= modAmp;
+carStep = (carFreq + modVal) / samplerate;
+
+if (carPhase >= 1) {
+	carPhase -= 1;
+	if (running) {
+		jx = ix - 1;
+		y = peek(b, ix, interp="none", index="samples");
+		z = peek(b, jx, interp="none", index="samples");
+		if (y < z) {
+			poke(b, y, jx, index="samples");
+			poke(b, z, ix, index="samples");
+		}
+		ix = (ix >= len) ? 1 : ix + 1; // unrolled array traversal
+	}
+}
+
+if (modPhase >= 1) {
+	modPhase -= 1;
+}
+
+out1 = peek(b, carPhase, index="phase", interp="linear");
+
+carPhase += carStep;
+modPhase += modStep;

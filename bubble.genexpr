@@ -1,0 +1,35 @@
+Buffer b("table");
+
+// Sort variables
+History ix(1);
+History jx(0);
+History y(0);
+History z(0);
+Param running(0);
+Param badIndex(0); // allow ix to run beyond the array length
+
+//Synth variables
+History p(0);
+Param freq(50);
+
+len = dim(b) + badIndex - 1;
+step = freq / samplerate;
+
+if (p >= 1) {
+	p -= 1;
+	if (running) {
+		jx = ix - 1;
+		y = peek(b, ix, interp="none", index="samples");
+		z = peek(b, jx, interp="none", index="samples");
+		if (y < z) {
+			poke(b, y, jx, index="samples");
+			poke(b, z, ix, index="samples");
+		}
+		ix = (ix >= len) ? 1 : ix + 1; // unrolled array traversal
+	}
+}
+out1 = peek(b, p, index="phase", interp="linear");
+
+p += step;
+
+
