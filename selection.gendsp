@@ -1,0 +1,323 @@
+{"patcher" : 
+	{
+		"fileversion" : 1,
+		"appversion" : 
+		{
+			"major" : 6,
+			"minor" : 1,
+			"revision" : 5,
+			"architecture" : "x86"
+		},
+
+		"rect" : [ 100.0, 100.0, 600.0, 450.0 ],
+		"bgcolor" : [ 0.9, 0.9, 0.9, 1.0 ],
+		"bglocked" : 0,
+		"openinpresentation" : 0,
+		"default_fontsize" : 12.0,
+		"default_fontface" : 0,
+		"default_fontname" : "Arial",
+		"gridonopen" : 0,
+		"gridsize" : [ 15.0, 15.0 ],
+		"gridsnaponopen" : 0,
+		"statusbarvisible" : 2,
+		"toolbarvisible" : 1,
+		"boxanimatetime" : 200,
+		"imprint" : 0,
+		"enablehscroll" : 1,
+		"enablevscroll" : 1,
+		"devicewidth" : 0.0,
+		"description" : "",
+		"digest" : "",
+		"tags" : "",
+		"boxes" : 
+		[ 	
+{
+    "box": {
+        "code": "Buffer b(\"table\");\n\n// Sort variables\nHistory ix(0);\nHistory jx(1);\nHistory mx(0);\nHistory iv(0);\nHistory jv(0);\nHistory mv(0);\nParam running(0);\nParam badIndex(0); // allow ix to run beyond the array length\n\n//Synth variables\nHistory p(0);\nParam freq(50);\n\nlen = dim(b) + badIndex - 1;\nstep = freq / samplerate;\n\n// TODO: fix minimum read/write\n// array traversal seems to be implemented correctly\n\nif (p >= 1) {\n\tp -= 1;\n\tif (running) {\n\t\tiv = peek(b, ix, interp=\"none\", index=\"samples\");\n\t\tjv = peek(b, jx, interp=\"none\", index=\"samples\");\n\t\tmv = peek(b, mx, interp=\"none\", index=\"samples\");\n\t\tif (jv < mv) {\n\t\t\tmv = jv;\n\t\t\tmx = jx;\n\t\t}\n\t\tif (jx >= len) {\n\t\t\tpoke(b, mv, ix, index=\"samples\");\n\t\t\tpoke(b, iv, mx, index=\"samples\");\n\t\t\tix = (ix >= len - 1) ? 0 : ix + 1;\t\n\t\t\tiv = peek(b, ix, interp=\"none\", index=\"samples\");\n\t\t\tmx = ix;\n\t\t\tmv = iv;\n\t\t\tjx = ix + 1;\n\t\t} else {\n\t\t\tjx += 1;\n\t\t}\n\t} else {\n\t\tix = 0;\n\t\tiv = 1;\n\t\tmx = 0;\n\t}\n}\nout1 = peek(b, p, index=\"phase\", interp=\"linear\");\nout2 = ix;\nout3 = iv;\nout4 = jx;\nout5 = jv;\nout6 = mx;\nout7 = mv;\n\np += step;\n\n\n\n\n\n\t\t// if (y < z) {\n\t\t// \tpoke(b, y, jx, index=\"samples\");\n\t\t// \tpoke(b, z, ix, index=\"samples\");\n\t\t// }",
+        "fontname": "Arial",
+        "fontsize": 12.0,
+        "id": "codebox1",
+        "maxclass": "codebox",
+        "numinlets": 1,
+        "numoutlets": 7,
+        "patching_rect": [
+            20,
+            50.0,
+            280.0,
+            200.0
+        ]
+    }
+},
+{
+    "box": {
+        "fontname": "Arial",
+        "fontsize": 12.0,
+        "id": "in1",
+        "maxclass": "newobj",
+        "numinlets": 0,
+        "numoutlets": 1,
+        "patching_rect": [
+            20.0,
+            20.0,
+            35.0,
+            20.0
+        ],
+        "text": "in 1"
+    }
+},
+{
+    "box": {
+        "fontname": "Arial",
+        "fontsize": 12.0,
+        "id": "out1",
+        "maxclass": "newobj",
+        "numinlets": 1,
+        "numoutlets": 0,
+        "outlettype": [
+            ""
+        ],
+        "patching_rect": [
+            20.0,
+            260.0,
+            35.0,
+            20.0
+        ],
+        "text": "out 1"
+    }
+},
+{
+    "box": {
+        "fontname": "Arial",
+        "fontsize": 12.0,
+        "id": "out2",
+        "maxclass": "newobj",
+        "numinlets": 1,
+        "numoutlets": 0,
+        "outlettype": [
+            ""
+        ],
+        "patching_rect": [
+            63.5,
+            260.0,
+            35.0,
+            20.0
+        ],
+        "text": "out 2"
+    }
+},
+{
+    "box": {
+        "fontname": "Arial",
+        "fontsize": 12.0,
+        "id": "out3",
+        "maxclass": "newobj",
+        "numinlets": 1,
+        "numoutlets": 0,
+        "outlettype": [
+            ""
+        ],
+        "patching_rect": [
+            107.0,
+            260.0,
+            35.0,
+            20.0
+        ],
+        "text": "out 3"
+    }
+},
+{
+    "box": {
+        "fontname": "Arial",
+        "fontsize": 12.0,
+        "id": "out4",
+        "maxclass": "newobj",
+        "numinlets": 1,
+        "numoutlets": 0,
+        "outlettype": [
+            ""
+        ],
+        "patching_rect": [
+            150.5,
+            260.0,
+            35.0,
+            20.0
+        ],
+        "text": "out 4"
+    }
+},
+{
+    "box": {
+        "fontname": "Arial",
+        "fontsize": 12.0,
+        "id": "out5",
+        "maxclass": "newobj",
+        "numinlets": 1,
+        "numoutlets": 0,
+        "outlettype": [
+            ""
+        ],
+        "patching_rect": [
+            194.0,
+            260.0,
+            35.0,
+            20.0
+        ],
+        "text": "out 5"
+    }
+},
+{
+    "box": {
+        "fontname": "Arial",
+        "fontsize": 12.0,
+        "id": "out6",
+        "maxclass": "newobj",
+        "numinlets": 1,
+        "numoutlets": 0,
+        "outlettype": [
+            ""
+        ],
+        "patching_rect": [
+            237.5,
+            260.0,
+            35.0,
+            20.0
+        ],
+        "text": "out 6"
+    }
+},
+{
+    "box": {
+        "fontname": "Arial",
+        "fontsize": 12.0,
+        "id": "out7",
+        "maxclass": "newobj",
+        "numinlets": 1,
+        "numoutlets": 0,
+        "outlettype": [
+            ""
+        ],
+        "patching_rect": [
+            281.0,
+            260.0,
+            35.0,
+            20.0
+        ],
+        "text": "out 7"
+    }
+}],
+ "lines" : [
+{
+    "patchline": {
+        "destination": [
+            "codebox1",
+            0
+        ],
+        "disabled": 0,
+        "hidden": 0,
+        "source": [
+            "in1",
+            0
+        ]
+    }
+},
+{
+    "patchline": {
+        "destination": [
+            "out1",
+            0
+        ],
+        "disabled": 0,
+        "hidden": 0,
+        "source": [
+            "codebox1",
+            0
+        ]
+    }
+},
+{
+    "patchline": {
+        "destination": [
+            "out2",
+            0
+        ],
+        "disabled": 0,
+        "hidden": 0,
+        "source": [
+            "codebox1",
+            1
+        ]
+    }
+},
+{
+    "patchline": {
+        "destination": [
+            "out3",
+            0
+        ],
+        "disabled": 0,
+        "hidden": 0,
+        "source": [
+            "codebox1",
+            2
+        ]
+    }
+},
+{
+    "patchline": {
+        "destination": [
+            "out4",
+            0
+        ],
+        "disabled": 0,
+        "hidden": 0,
+        "source": [
+            "codebox1",
+            3
+        ]
+    }
+},
+{
+    "patchline": {
+        "destination": [
+            "out5",
+            0
+        ],
+        "disabled": 0,
+        "hidden": 0,
+        "source": [
+            "codebox1",
+            4
+        ]
+    }
+},
+{
+    "patchline": {
+        "destination": [
+            "out6",
+            0
+        ],
+        "disabled": 0,
+        "hidden": 0,
+        "source": [
+            "codebox1",
+            5
+        ]
+    }
+},
+{
+    "patchline": {
+        "destination": [
+            "out7",
+            0
+        ],
+        "disabled": 0,
+        "hidden": 0,
+        "source": [
+            "codebox1",
+            6
+        ]
+    }
+}
+]
+}
+}

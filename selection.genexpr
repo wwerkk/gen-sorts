@@ -1,0 +1,67 @@
+Buffer b("table");
+
+// Sort variables
+History ix(0);
+History jx(1);
+History mx(0);
+History iv(0);
+History jv(0);
+History mv(0);
+Param running(0);
+Param badIndex(0); // allow ix to run beyond the array length
+
+//Synth variables
+History p(0);
+Param freq(50);
+
+len = dim(b) + badIndex - 1;
+step = freq / samplerate;
+
+// TODO: fix minimum read/write
+// array traversal seems to be implemented correctly
+
+if (p >= 1) {
+	p -= 1;
+	if (running) {
+		iv = peek(b, ix, interp="none", index="samples");
+		jv = peek(b, jx, interp="none", index="samples");
+		mv = peek(b, mx, interp="none", index="samples");
+		if (jv < mv) {
+			mv = jv;
+			mx = jx;
+		}
+		if (jx >= len) {
+			poke(b, mv, ix, index="samples");
+			poke(b, iv, mx, index="samples");
+			ix = (ix >= len - 1) ? 0 : ix + 1;	
+			iv = peek(b, ix, interp="none", index="samples");
+			mx = ix;
+			mv = iv;
+			jx = ix + 1;
+		} else {
+			jx += 1;
+		}
+	} else {
+		ix = 0;
+		iv = 1;
+		mx = 0;
+	}
+}
+out1 = peek(b, p, index="phase", interp="linear");
+out2 = ix;
+out3 = iv;
+out4 = jx;
+out5 = jv;
+out6 = mx;
+out7 = mv;
+
+p += step;
+
+
+
+
+
+		// if (y < z) {
+		// 	poke(b, y, jx, index="samples");
+		// 	poke(b, z, ix, index="samples");
+		// }
